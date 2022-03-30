@@ -48,3 +48,12 @@ clean:
 	make -C lzma clean
 	make -C mksquashfs_xz clean
 	rm -rf $(THISDIR)/go/go
+
+tools-y += ucl upx ninja
+$(curdir)/upx/compile := $(curdir)/ucl/compile
+$(curdir)/cmake/compile += $(curdir)/libressl/compile $(curdir)/ninja/compile
+
+ifneq ($(CONFIG_CCACHE)$(CONFIG_SDK),)
+$(foreach tool, $(filter-out xz patch ninja,$(tools-y)), $(eval $(curdir)/$(tool)/compile += $(curdir)/ccache/compile))
+tools-y += ccache
+endif
